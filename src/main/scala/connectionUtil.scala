@@ -4,7 +4,6 @@ import java.sql.PreparedStatement
 import java.sql.ResultSet
 
 object connectionUtil {
-  //paolo
   val driver = "com.mysql.cj.jdbc.Driver"
   val url = sys.env("JDBC_DATABASE")
   val username = sys.env("JDBC_USERNAME")
