@@ -2,7 +2,15 @@ import org.apache.log4j.{Level, Logger}
 import org.apache.spark.sql.SparkSession
 
 object admin {
-  System.setProperty("hadoop.home.dir", "C:\\Program Files (x86)\\hadoop") //spark session for windows
+
+  def showMenu(): Unit ={
+    //admin user menu prints out information to enable the user to make a choice
+
+  }
+
+
+  //creates spark session
+  System.setProperty("hadoop.home.dir", "C:\\Program Files (x86)\\hadoop")
   val spark = SparkSession
     .builder
     .appName("hello hive")
@@ -15,5 +23,4 @@ object admin {
   Logger.getLogger("akka").setLevel(Level.OFF)
   Logger.getLogger("org.apache.spark").setLevel(Level.OFF)
 
-  //set to admin option in menu
 }

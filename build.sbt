@@ -9,3 +9,6 @@ libraryDependencies += "org.apache.spark" %% "spark-core" % "2.4.3"
 libraryDependencies += "org.apache.spark" %% "spark-sql" % "2.4.3"
 libraryDependencies += "org.apache.spark" %% "spark-hive" % "2.4.3"
 libraryDependencies += "mysql" % "mysql-connector-java" % "8.0.25"
+val appDependencies = Seq(
+  "org.mindrot" % "jbcrypt" % "0.3m"
+)
