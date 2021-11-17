@@ -5,7 +5,7 @@ import java.sql.ResultSet
 import jodd.util.BCrypt
 
 object connectionUtil {
-  //creates database connection using env variables
+ //creates database connection using env variables
   val driver = "com.mysql.cj.jdbc.Driver"
   val url = sys.env("JDBC_DATABASE")
   val username = sys.env("JDBC_USERNAME")
