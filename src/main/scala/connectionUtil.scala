@@ -5,8 +5,8 @@ import java.sql.ResultSet
 
 object connectionUtil {
   val driver = "com.mysql.cj.jdbc.Driver"
-  val url = "jdbc:mysql://localhost/p2project"
-  val username = "root"
+  val url = sys.env("JDBC_DATABASE")
+  val username = sys.env("JDBC_USERNAME")
   val password = sys.env("JDBC_PASSWORD")
   var connection: Connection = null
   var admin = false
