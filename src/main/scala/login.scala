@@ -1,5 +1,7 @@
 
+
 object login {
+
 
   def login() {
 
@@ -8,22 +10,46 @@ object login {
     to log in if the info provided is correct
     */
 
-    //var admin = false
+    //var isAdmin = false
     //var logged_in = false
 
     println(Console.BOLD + "Please enter your username")
 
-    var userName = scala.io.StdIn.readLine()
+    var username = scala.io.StdIn.readLine()
     var password = "password"
 
-    if (userName != null) {
+    if (username != null) {
 
       println(Console.BOLD + "Please enter your password")
       password = scala.io.StdIn.readLine()
 
     }
 
-    connectionUtil.login(userName, password)
+    connectionUtil.userLogin(username, password)
+
+
+    //println("logged in status "+logged_in)
+    //println("admin status "+isAdmin)
+    if(connectionUtil.logged_in == true && connectionUtil.isAdmin == true){
+      println(Console.BOLD+Console.GREEN+"Login Successful!"+Console.RESET)
+      //println("show menu"+username)
+      //println("show menu"+password)
+      connectionUtil.logged_in = false
+      connectionUtil.isAdmin = false
+      admin.showMenu(username, password)
+
+    }
+    else if(connectionUtil.logged_in == true && connectionUtil.isAdmin == false){
+      println(Console.BOLD+Console.GREEN+"Login Successful!"+Console.RESET)
+      connectionUtil.logged_in = false
+      basic.showMenu()
+
+    }
+    else if(connectionUtil.logged_in == false) {
+        println(Console.BOLD+Console.RED+"Invalid password, please try again"+Console.RESET)
+        login()
+      }
+
   }
 }
 

@@ -6,8 +6,9 @@ object basic {
   def showMenu(): Unit ={
   //basic user menu prints out information to enable the user to make a choice
     println("Please select an option from the list below")
-    println("Update username and password")
-    println("Query1")
+    println("option 1")
+    println("option 2")
+    println("etc")
 
   }
 

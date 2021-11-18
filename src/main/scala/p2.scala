@@ -12,6 +12,7 @@ import org.apache.spark.sql.SparkSession
 object p2 extends App{
 
   //starts the application and prompts the user to login
-  login.login()
-//connectionUtil.make_new_user()
+   login.login()
+   //connectionUtil.make_new_user()
+
 }
