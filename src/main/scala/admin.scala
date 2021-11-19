@@ -27,13 +27,22 @@ object admin {
     spark.sql("SELECT * FROM county_pop").show()
   }
 
-  def vaccine_hesistancy()={
-    //Don't need to show
-    spark.sql("DROP table if EXISTS vaccine_hesitancy")
-    spark.sql("create table if not exists vaccine_hesitancy(FIPS varchar(5), county_name varchar(50), state_name varchar(50), percent_hesitant double, percent_strong_hesitant double, percent_vax double, percent_hispanic double, percent_asian double, percent_black double, percent_white double, state_code varchar(5)) row format delimited fields terminated by ',' ")
-    spark.sql("LOAD DATA LOCAL INPATH 'input/vaccine_hesitancy.csv' INTO TABLE vaccine_hesitancy")
-    spark.sql("SELECT * FROM vaccine_hesitancy").show()
+  def vaccine_hesistancy(choice: Int)={
+    //Choice 1: create table
+    //Choice 2: search table for by FIPS
+    if (choice ==1 ) {
+      spark.sql("DROP table if EXISTS vaccine_hesitancy")
+      spark.sql("create table if not exists vaccine_hesitancy(FIPS varchar(5), county_name varchar(50), state_name varchar(50), percent_hesitant double, percent_strong_hesitant double, percent_vax double, percent_hispanic double, percent_asian double, percent_black double, percent_white double, state_code varchar(5)) row format delimited fields terminated by ',' ")
+      spark.sql("LOAD DATA LOCAL INPATH 'input/vaccine_hesitancy.csv' INTO TABLE vaccine_hesitancy")
+      spark.sql("SELECT * FROM vaccine_hesitancy").show()
+    } else if(choice == 2){
+      println("Enter the county ")
+      val user_input = readLine
+      spark.sql(s"select * from vaccine_hesitancy where FIPS = $user_input")
+    }
+
   }
+
 
   def state_death_cases()={
     //don't need to show
