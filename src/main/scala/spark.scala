@@ -3,14 +3,6 @@ import org.apache.spark.sql.SparkSession
 
 object spark {
 
-  def showMenu(): Unit ={
-    // do something
-
-
-
-
-  }
-
   System.setProperty("hadoop.home.dir", "C:\\Program Files (x86)\\hadoop")
   val spark = SparkSession
     .builder
@@ -129,5 +121,12 @@ object spark {
     spark.sql("SELECT * FROM deathspercap_vs_hesitancy").show()
   }
 
+  def showMenu(): Unit ={
+    // do something
+
+
+
+
+  }
 
 }

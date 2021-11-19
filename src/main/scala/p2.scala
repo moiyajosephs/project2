@@ -22,7 +22,7 @@ object p2 extends App{
    //connectionUtil.make_new_user()
 
 
-  spark.county_hesitancy(user_int)
+ // spark.county_hesitancy(user_int)
 
   def make_stuff() {
     //make sure you have input folder and delete your metastore_db
