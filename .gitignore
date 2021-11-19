@@ -8,3 +8,6 @@ target
 out
 .bsp
 index
+spark-warehouse
+metastore_db
+.vscode
