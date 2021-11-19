@@ -12,10 +12,15 @@ import org.apache.spark.sql.SparkSession
 object p2 extends App{
 
   //starts the application and prompts the user to login
+
   //login.login()
    //connectionUtil.make_new_user()
-  println("Enter 2 to query county")
-  val user_int = readInt()
+  //println("Enter 2 to query county")
+  //val user_int = readInt()
+
+  login.login()
+   //connectionUtil.make_new_user()
+
 
   spark.county_hesitancy(user_int)
 
