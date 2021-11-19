@@ -14,6 +14,7 @@ object connectionUtil {
   var logged_in = false
   var update = false
   var success = false
+  var made_admin = false
   Class.forName(driver)
   //connection = DriverManager.getConnection(url, username, password)
 
@@ -31,6 +32,8 @@ object connectionUtil {
         val dbadmin = savedSet.getInt("administrator")
         if (dbadmin == 1) {
           isAdmin = true
+        }else if(dbadmin == 0){
+          isAdmin = false
         }
         if (BCrypt.checkpw(password, passwordHash)) {
           logged_in = true
@@ -66,7 +69,7 @@ object connectionUtil {
       val passwordHash = savedSet.getString("password")
       //println(password + " "+ currPassword)
       if (BCrypt.checkpw(password, passwordHash)) {
-        println(Console.BOLD+Console.GREEN+"Information receive from the database"+Console.RESET)
+        println(Console.BOLD+Console.GREEN+"USERNAME FOUND"+Console.RESET)
         println("Enter new password:")
         val new_password = scala.io.StdIn.readLine
         val passwordHash = BCrypt.hashpw(new_password, BCrypt.gensalt)
@@ -77,7 +80,7 @@ object connectionUtil {
         prpStmt2.close
         update = true
         println(Console.BOLD+Console.GREEN+"UPDATE SUCCESSFUL! "+Console.RESET)
-        println(Console.BOLD+Console.GREEN+"New login required!"+Console.RESET)
+        println(Console.BOLD+Console.GREEN+"NEW LOGIN REQUIRED!"+Console.RESET)
         login.login()
       }
 
@@ -87,7 +90,7 @@ object connectionUtil {
 
     }
     finally {
-    if(update == false) {
+    if(update == false && isAdmin == true) {
       println(Console.BOLD+Console.RED+"UPDATE FAILED!"+Console.RESET)
       }
       update = false
@@ -115,7 +118,7 @@ object connectionUtil {
       preparedStmt.execute
       success = true
       preparedStmt.close
-      println(Console.BOLD + Console.GREEN + "NEW USER SUCCESSFULLy ADDED!" + Console.RESET)
+      println(Console.BOLD + Console.GREEN + "NEW USER SUCCESSFULLY ADDED!" + Console.RESET)
       admin.showMenu(admin.user, admin.pass)
     }
     catch {
@@ -124,6 +127,35 @@ object connectionUtil {
     finally {
       if(success == false){
         println(Console.BOLD+Console.RED+"USERNAME ALREADY EXISTS IN THE DATABASE!"+Console.RESET)
+        success = false
+        admin.showMenu(admin.user, admin.pass)
+
+      }
+      connection.close()
+    }
+  }
+
+  //allows the addmin to make another user and admin as long as they know that users name
+  def make_admin(): Unit = {
+    var connection: Connection = null
+    try {
+      connection = DriverManager.getConnection(url, dbusername, dbpassword)
+      println("Please enter the username you want to make an admin")
+      var updateUser = scala.io.StdIn.readLine()
+      val prpStmt2: PreparedStatement = connection.prepareStatement("UPDATE users " + s"SET administrator = 1 WHERE username = ?")
+      prpStmt2.setString(1, updateUser)
+      prpStmt2.executeUpdate()
+      prpStmt2.close
+      made_admin = true
+      println(Console.BOLD+Console.GREEN+"SUCCESSFULLY UPDATED!"+Console.RESET)
+      admin.showMenu(admin.user, admin.pass)
+    }
+    catch {
+      case e: Throwable => e.printStackTrace()
+    }
+    finally {
+      if(made_admin == false){
+        println(Console.BOLD+Console.RED+"UPDATE FAILED PLEASE TRY AGAIN!"+Console.RESET)
         success = false
         admin.showMenu(admin.user, admin.pass)
 

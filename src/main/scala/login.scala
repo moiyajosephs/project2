@@ -31,7 +31,7 @@ object login {
     //println("logged in status "+logged_in)
     //println("admin status "+isAdmin)
     if(connectionUtil.logged_in == true && connectionUtil.isAdmin == true){
-      println(Console.BOLD+Console.GREEN+"Login Successful!"+Console.RESET)
+      println(Console.BOLD+Console.GREEN+"LOGIN SUCCESSFUL!"+Console.RESET)
       //println("show menu"+username)
       //println("show menu"+password)
       connectionUtil.logged_in = false
@@ -40,13 +40,13 @@ object login {
 
     }
     else if(connectionUtil.logged_in == true && connectionUtil.isAdmin == false){
-      println(Console.BOLD+Console.GREEN+"Login Successful!"+Console.RESET)
+      println(Console.BOLD+Console.GREEN+"LOGIN SUCCESSFUL!"+Console.RESET)
       connectionUtil.logged_in = false
-      basic.showMenu()
+      basic.showMenu(username, password)
 
     }
     else if(connectionUtil.logged_in == false) {
-        println(Console.BOLD+Console.RED+"Invalid password, please try again"+Console.RESET)
+        println(Console.BOLD+Console.RED+"INVALID USERNAME OR PASSWORD, TRY AGAIN"+Console.RESET)
         login()
       }
 
