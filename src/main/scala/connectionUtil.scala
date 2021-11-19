@@ -14,6 +14,7 @@ object connectionUtil {
   var logged_in = false
   var update = false
   var success = false
+  var made_admin = false
   Class.forName(driver)
   //connection = DriverManager.getConnection(url, username, password)
 
@@ -31,6 +32,8 @@ object connectionUtil {
         val dbadmin = savedSet.getInt("administrator")
         if (dbadmin == 1) {
           isAdmin = true
+        }else if(dbadmin == 0){
+          isAdmin = false
         }
         if (BCrypt.checkpw(password, passwordHash)) {
           logged_in = true
@@ -87,7 +90,7 @@ object connectionUtil {
 
     }
     finally {
-    if(update == false) {
+    if(update == false && isAdmin == true) {
       println(Console.BOLD+Console.RED+"UPDATE FAILED!"+Console.RESET)
       }
       update = false
@@ -124,6 +127,35 @@ object connectionUtil {
     finally {
       if(success == false){
         println(Console.BOLD+Console.RED+"USERNAME ALREADY EXISTS IN THE DATABASE!"+Console.RESET)
+        success = false
+        admin.showMenu(admin.user, admin.pass)
+
+      }
+      connection.close()
+    }
+  }
+
+  //allows the addmin to make another user and admin as long as they know that users name
+  def make_admin(): Unit = {
+    var connection: Connection = null
+    try {
+      connection = DriverManager.getConnection(url, dbusername, dbpassword)
+      println("Please enter the username you want to make an admin")
+      var updateUser = scala.io.StdIn.readLine()
+      val prpStmt2: PreparedStatement = connection.prepareStatement("UPDATE users " + s"SET administrator = 1 WHERE username = ?")
+      prpStmt2.setString(1, updateUser)
+      prpStmt2.executeUpdate()
+      prpStmt2.close
+      made_admin = true
+      println(Console.BOLD+Console.GREEN+"SUCCESSFULLY UPDATED!"+Console.RESET)
+      admin.showMenu(admin.user, admin.pass)
+    }
+    catch {
+      case e: Throwable => e.printStackTrace()
+    }
+    finally {
+      if(made_admin == false){
+        println(Console.BOLD+Console.RED+"UPDATE FAILED PLEASE TRY AGAIN!"+Console.RESET)
         success = false
         admin.showMenu(admin.user, admin.pass)
 

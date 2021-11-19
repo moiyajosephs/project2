@@ -4,7 +4,7 @@ import org.apache.spark.sql.SparkSession
 object spark {
 
   def showMenu(): Unit ={
-    // do something 
+    // do something
 
 
 
