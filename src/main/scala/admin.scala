@@ -112,5 +112,4 @@ object admin {
   Logger.getLogger("org").setLevel(Level.OFF)
   Logger.getLogger("akka").setLevel(Level.OFF)
   Logger.getLogger("org.apache.spark").setLevel(Level.OFF)
-
 }
