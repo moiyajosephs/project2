@@ -32,13 +32,16 @@ object spark {
     spark.sql("SELECT * FROM county_pop").show()
   }
 
-  def vaccine_hesistancy() = {
-    //Don't need to show
+  def vaccine_hesistancy()= {
+    //Choice 1: create table
+    //Choice 2: search table for by FIPS
     spark.sql("DROP table if EXISTS vaccine_hesitancy")
     spark.sql("create table if not exists vaccine_hesitancy(FIPS varchar(5), county_name varchar(50), state_name varchar(50), percent_hesitant double, percent_strong_hesitant double, percent_vax double, percent_hispanic double, percent_asian double, percent_black double, percent_white double, state_code varchar(5)) row format delimited fields terminated by ',' ")
     spark.sql("LOAD DATA LOCAL INPATH 'input/vaccine_hesitancy.csv' INTO TABLE vaccine_hesitancy")
     spark.sql("SELECT * FROM vaccine_hesitancy").show()
   }
+
+
 
   def state_death_cases() = {
     //don't need to show
@@ -55,11 +58,26 @@ object spark {
     spark.sql("SELECT * FROM county_pop2").show()
   }
 
-  def county_hesitancy() = {
+  def county_hesitancy(a:Int) = {
     //don't show
-    spark.sql("DROP VIEW IF EXISTS county_hesitancy")
-    spark.sql("create view if not exists county_hesitancy as (SELECT county_pop2.FIPS, county_pop2.stname AS STATE, county_pop2.ctyname AS COUNTY, county_pop2.popestimate2020 AS POPULATION_SIZE, vaccine_hesitancy.percent_hesitant AS PERCENT_HESITANT_UNSURE, vaccine_hesitancy.percent_strong_hesitant AS PERCENT_STRONG_HESITANT, vaccine_hesitancy.percent_hesitant * county_pop2.popestimate2020 AS HESITANT_UNSURE, vaccine_hesitancy.percent_strong_hesitant * county_pop2.popestimate2020 AS STRONG_HESITANT FROM county_pop2 INNER JOIN vaccine_hesitancy ON county_pop2.FIPS = vaccine_hesitancy.FIPS order by FIPS)")
-    spark.sql("SELECT * FROM county_hesitancy").show()
+      if(a==1) {
+     //   spark.sql("DROP VIEW IF EXISTS county_hesitancy")
+       // spark.sql("create view if not exists county_hesitancy as (SELECT county_pop2.FIPS, county_pop2.stname AS STATE, county_pop2.ctyname AS COUNTY, county_pop2.popestimate2020 AS POPULATION_SIZE, vaccine_hesitancy.percent_hesitant AS PERCENT_HESITANT_UNSURE, vaccine_hesitancy.percent_strong_hesitant AS PERCENT_STRONG_HESITANT, vaccine_hesitancy.percent_hesitant * county_pop2.popestimate2020 AS HESITANT_UNSURE, vaccine_hesitancy.percent_strong_hesitant * county_pop2.popestimate2020 AS STRONG_HESITANT FROM county_pop2 INNER JOIN vaccine_hesitancy ON county_pop2.FIPS = vaccine_hesitancy.FIPS order by FIPS)")
+        spark.sql("SELECT * FROM county_hesitancy").show()
+      }
+      else if(a==2){
+        println("Enter the county")
+        var user_input = scala.io.StdIn.readLine()
+        spark.sql(s"Select * from county_hesitancy where FIPS = $user_input").show()
+      }
+      else if(a==3){
+        println("Enter the state")
+        var user_input = scala.io.StdIn.readLine()
+        spark.sql(s"Select * from county_hesitancy where STATE = '$user_input'").show()
+      }
+    else{
+        println("Not a valid query")
+      }
   }
 
   def state_hesitancy() = {
