@@ -42,7 +42,7 @@ object login {
     else if(connectionUtil.logged_in == true && connectionUtil.isAdmin == false){
       println(Console.BOLD+Console.GREEN+"Login Successful!"+Console.RESET)
       connectionUtil.logged_in = false
-      basic.showMenu()
+      basic.showMenu(username, password)
 
     }
     else if(connectionUtil.logged_in == false) {

@@ -18,7 +18,8 @@ object admin {
     println(Console.BOLD + "1. Update user password")
     println(Console.BOLD + "2. Make new new user")
     println(Console.BOLD + "3. Make current user an admin")
-    println(Console.BOLD + "etc")
+    println(Console.BOLD + "4. Query the database")
+    println(Console.BOLD + "0. Log out")
     selection = scala.io.StdIn.readInt()
     //println(selection)
     if (selection == 1) {
@@ -26,7 +27,7 @@ object admin {
     } else if (selection == 2) {
       connectionUtil.make_new_user()
     } else if (selection == 3) {
-
+      connectionUtil.make_admin()
 
     }else if (selection == 4){
 
@@ -38,7 +39,7 @@ object admin {
 
     }else{
       println(Console.RED+Console.BOLD+"THE ENTERED NUMBER IS NOT A VALID SELECTION PLEASE TRY AGAIN"+Console.RESET)
-
+      showMenu(user, pass)
     }
 
   }
