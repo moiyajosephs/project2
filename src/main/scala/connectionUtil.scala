@@ -69,7 +69,7 @@ object connectionUtil {
       val passwordHash = savedSet.getString("password")
       //println(password + " "+ currPassword)
       if (BCrypt.checkpw(password, passwordHash)) {
-        println(Console.BOLD+Console.GREEN+"Information receive from the database"+Console.RESET)
+        println(Console.BOLD+Console.GREEN+"USERNAME FOUND"+Console.RESET)
         println("Enter new password:")
         val new_password = scala.io.StdIn.readLine
         val passwordHash = BCrypt.hashpw(new_password, BCrypt.gensalt)
@@ -80,7 +80,7 @@ object connectionUtil {
         prpStmt2.close
         update = true
         println(Console.BOLD+Console.GREEN+"UPDATE SUCCESSFUL! "+Console.RESET)
-        println(Console.BOLD+Console.GREEN+"New login required!"+Console.RESET)
+        println(Console.BOLD+Console.GREEN+"NEW LOGIN REQUIRED!"+Console.RESET)
         login.login()
       }
 
@@ -118,7 +118,7 @@ object connectionUtil {
       preparedStmt.execute
       success = true
       preparedStmt.close
-      println(Console.BOLD + Console.GREEN + "NEW USER SUCCESSFULLy ADDED!" + Console.RESET)
+      println(Console.BOLD + Console.GREEN + "NEW USER SUCCESSFULLY ADDED!" + Console.RESET)
       admin.showMenu(admin.user, admin.pass)
     }
     catch {

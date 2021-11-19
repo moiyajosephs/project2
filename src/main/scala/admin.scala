@@ -13,7 +13,7 @@ object admin {
     //println(this.pass+"a")
 
     //admin user menu prints out information to enable the user to make a choice
-    println(Console.BOLD + Console.GREEN + "Welcome admin user " + username + Console.RESET)
+    println(Console.BOLD + Console.GREEN + "WELCOME ADMIN " + username + Console.RESET)
     println("")
     println(Console.BOLD + "1. Update user password")
     println(Console.BOLD + "2. Make new new user")
