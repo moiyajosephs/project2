@@ -31,12 +31,12 @@ object admin {
       connectionUtil.make_admin()
 
     }else if (selection == 4){
-
+      p2.make_stuff()
+      spark.showQueryMenu()
 
     }else if(selection == 0){
       println(Console.GREEN+Console.BOLD+"LOGOUT SUCCESSFUL"+Console.RESET)
       login.login()
-
 
     }else{
       println(Console.RED+Console.BOLD+"THE ENTERED NUMBER IS NOT A VALID SELECTION PLEASE TRY AGAIN"+Console.RESET)

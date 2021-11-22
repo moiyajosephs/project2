@@ -30,7 +30,7 @@ object p2 extends App{
     spark.vaccine_hesistancy()
     spark.state_death_cases()
     spark.county_pop2()
-    spark.county_hesitancy(1)
+    spark.county_hesitancy()
     spark.state_hesitancy()
     spark.state_percent_hesitancy()
     spark.deaths_cases_since_june7()
@@ -39,4 +39,7 @@ object p2 extends App{
     spark.deaths_cases_per100000()
     spark.deathspercap_vs_hesitancy()
   }
+
+
+
 }
