@@ -8,7 +8,7 @@ object spark {
   var hesitance = ""
   var order = ""
 
-  System.setProperty("hadoop.home.dir", "C:\\hadoop")
+  System.setProperty("hadoop.home.dir", "C:\\Program Files (x86)\\hadoop")
   val spark = SparkSession
     .builder
     .appName("hello hive")
@@ -149,6 +149,7 @@ object spark {
   def query4() = {
     greatestOrLeast()
     spark.sql(s"select STATE, PERCENT_STRONG_HESITANT, CASES_PER_100000, DEATHS_PER_100000 from deathspercap_vs_hesitancy order by PERCENT_STRONG_HESITANT $order limit 10 ").show
+    //spark.sql(s"select STATE, PERCENT_STRONG_HESITANT, CASES_PER_100000, DEATHS_PER_100000 from deathspercap_vs_hesitancy order by PERCENT_STRONG_HESITANT $order limit 10 ").write.format("csv").mode("overwrite").save(s"plotly/greatestorleast")
     showQueryMenu()
   }
   def query5() = {
