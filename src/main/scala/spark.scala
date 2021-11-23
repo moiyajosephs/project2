@@ -8,6 +8,7 @@ object spark {
   var hesitance = ""
   var order = ""
   var rank = ""
+  var user = ""
 
   System.setProperty("hadoop.home.dir", "C:\\Program Files (x86)\\hadoop")
   val spark = SparkSession
@@ -98,7 +99,9 @@ object spark {
     spark.sql("create view if not exists deathspercap_vs_hesitancy as (SELECT state_percent_hesitancy.STATE AS STATE, round(state_percent_hesitancy.PERCENT_HESITANT_UNSURE*100,1) AS PERCENT_HESITANT_UNSURE, round(state_percent_hesitancy.PERCENT_STRONG_HESITANT*100,1) AS PERCENT_STRONG_HESITANT, round(deaths_cases_per100000.CASES_PER_100000, 0) AS CASES_PER_100000, round(deaths_cases_per100000.DEATHS_PER_100000, 0) AS DEATHS_PER_100000 FROM deaths_cases_per100000 JOIN state_percent_hesitancy ON deaths_cases_per100000.STATE = state_percent_hesitancy.STATE)")
   }
 
-  def showQueryMenu(): Unit ={
+  def showQueryMenu(userType: String): Unit ={
+    user = userType
+
     println("COVID-19 VACCINE HESITANCY, CASES, DEATHS ANALYSIS TOOL")
     println("----------------------------------")
     println(s"1) Show estimated vaccine hesitancy data for your county")
@@ -119,9 +122,12 @@ object spark {
       query4()
     } else if(user_input == "5") {
       query5()
+    }else if(user_input == "0"){
+      println(Console.GREEN+Console.BOLD+"LOGOUT SUCCESSFUL"+Console.RESET)
+      login.login()
     } else {
       println("Invalid entry: Please enter a number 1-5")
-      showQueryMenu()
+      showQueryMenu(user)
     }
   }
 
@@ -130,7 +136,7 @@ object spark {
     countyFIPS = scala.io.StdIn.readLine()
     println("COUNTY VACCINE HESITANCY")
     spark.sql(s"Select STATE, COUNTY, POPULATION_SIZE, round(PERCENT_HESITANT_UNSURE * 100, 1) AS PERCENT_HESITANT_UNSURE, round(PERCENT_STRONG_HESITANT * 100) AS PERCENT_STRONG_HESITANT from county_hesitancy where FIPS = '$countyFIPS'").show
-    showQueryMenu()
+    toMenu()
   }
 
   def query2() = {
@@ -139,7 +145,8 @@ object spark {
     println("STATE VACCINE HESITANCY")
     spark.sql(s"Create view if not exists state_data as (Select state_pop.STATE, state_pop.POPULATION_ESTIMATE AS STATE_POPPULATION_ESTIMATE, round(PERCENT_HESITANT_UNSURE * 100, 1) AS PERCENT_HESITANT_UNSURE, round(PERCENT_STRONG_HESITANT * 100) AS PERCENT_STRONG_HESITANT from state_percent_hesitancy JOIN state_pop on state_percent_hesitancy.STATE = state_pop.STATE)")
     spark.sql(s"Select * from state_data where state = '$state'").show
-    showQueryMenu()
+    //showQueryMenu()
+    toMenu()
   }
 
   def query3() = {
@@ -147,22 +154,48 @@ object spark {
     state = scala.io.StdIn.readLine()
     println("STATE CASE AND DEATH TOTALS")
     spark.sql(s"Select STATE, CASES_NOV2021 AS TOTAL_CASES, DEATHS_NOV2021 AS TOTAL_DEATHS from deaths_cases_since_june7 where STATE = '$state'").show
-    showQueryMenu()
+    //showQueryMenu()
+    toMenu()
   }
 
   def query4() = {
     greatestOrLeast()
     println(s"COVID CASES/DEATHS PER CAPITA FOR STATES WITH THE $rank PERCENTAGE OF $hesitance INDIVIDUALS")
     spark.sql(s"select STATE, PERCENT_STRONG_HESITANT, CASES_PER_100000, DEATHS_PER_100000 from deathspercap_vs_hesitancy order by PERCENT_STRONG_HESITANT $order limit 10 ").show
+
+    if(user == "basic")
+      {
+        toMenu()
+      }
+
+    println("Would you like to save the data as a CSV file? Yes/No")
+    var saveFile = scala.io.StdIn.readLine()
+
+    if(saveFile.toUpperCase() == "YES") {
+      spark.sql(s"select STATE, PERCENT_STRONG_HESITANT, CASES_PER_100000, DEATHS_PER_100000 from deathspercap_vs_hesitancy order by PERCENT_STRONG_HESITANT $order limit 10 ").write.format("csv").mode("overwrite").save(s"plotly/greatestorleast")
+      println("Data has been successfully saved!")
+      }
+      else{
+      println("SORRY SAVING RESULT SET RESTRICTED TO ADMIN USER ONLY")
+      toMenu()
+    }
+    //showQueryMenu()
+    toMenu()
+
     spark.sql(s"select STATE, PERCENT_STRONG_HESITANT, CASES_PER_100000, DEATHS_PER_100000 from deathspercap_vs_hesitancy order by PERCENT_STRONG_HESITANT $order limit 50").write.format("csv").mode("overwrite").save(s"plotly/greatestorleast")
     showQueryMenu()
+
   }
   def query5() = {
     greatestOrLeast()
     println(s"COVID CASES/DEATHS PER CAPITA FOR STATES WITH THE $rank PERCENTAGE OF $hesitance INDIVIDUALS")
     spark.sql(s"select STATE, PERCENT_HESITANT_UNSURE, CASES_PER_100000, DEATHS_PER_100000 from deathspercap_vs_hesitancy order by PERCENT_HESITANT_UNSURE $order limit 10 ").show
-    spark.sql(s"select STATE, PERCENT_HESITANT_UNSURE, CASES_PER_100000, DEATHS_PER_100000 from deathspercap_vs_hesitancy order by PERCENT_HESITANT_UNSURE $order limit 50").write.format("csv").mode("overwrite").save(s"plotly/unsure")
-    showQueryMenu()
+    //showQueryMenu()
+    toMenu()
+
+    //spark.sql(s"select STATE, PERCENT_HESITANT_UNSURE, CASES_PER_100000, DEATHS_PER_100000 from deathspercap_vs_hesitancy order by PERCENT_HESITANT_UNSURE $order limit 50").write.format("csv").mode("overwrite").save(s"plotly/unsure")
+    //showQueryMenu()
+
   }
 
   def greatestOrLeast(): Unit = {
@@ -182,5 +215,19 @@ object spark {
     } else {
       println("Wrong input. Please enter 1 or 2")
     }
+
+
+  }
+  def toMenu(): Unit = {
+    println(Console.BOLD+"Press enter key to return to the query menu")
+    var buttonPress = scala.io.StdIn.readLine()
+    if(buttonPress == "") {
+      showQueryMenu(user)
+    }else if(buttonPress != ""){
+      println(Console.BOLD+Console.RED+"ANY INPUT WORKS FOR PEOPLE WHO WANT TO IGNORE INSTRUCTIONS"+Console.RESET)
+
+
+    }
+
   }
 }
