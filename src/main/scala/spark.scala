@@ -109,6 +109,7 @@ object spark {
     println(s"3) Show total covid cases/deaths in your state")
     println(s"4) Show covid cases/deaths per capita for states with the greatest/least amount of strong vaccine hesitancy")
     println(s"5) Show covid cases/deaths per capita for states with the greatest/least amount of vaccine uncertainty")
+    println(s"6) Logout")
     println("----------------------------------")
     println("Enter your option:")
     user_input = scala.io.StdIn.readLine()
@@ -176,14 +177,10 @@ object spark {
       println("Data has been successfully saved!")
       }
       else{
-      println("SORRY SAVING RESULT SET RESTRICTED TO ADMIN USER ONLY")
       toMenu()
     }
     //showQueryMenu()
     toMenu()
-
-    spark.sql(s"select STATE, PERCENT_STRONG_HESITANT, CASES_PER_100000, DEATHS_PER_100000 from deathspercap_vs_hesitancy order by PERCENT_STRONG_HESITANT $order limit 50").write.format("csv").mode("overwrite").save(s"plotly/greatestorleast")
-    showQueryMenu()
 
   }
   def query5() = {
@@ -192,7 +189,6 @@ object spark {
     spark.sql(s"select STATE, PERCENT_HESITANT_UNSURE, CASES_PER_100000, DEATHS_PER_100000 from deathspercap_vs_hesitancy order by PERCENT_HESITANT_UNSURE $order limit 10 ").show
     //showQueryMenu()
     toMenu()
-
     //spark.sql(s"select STATE, PERCENT_HESITANT_UNSURE, CASES_PER_100000, DEATHS_PER_100000 from deathspercap_vs_hesitancy order by PERCENT_HESITANT_UNSURE $order limit 50").write.format("csv").mode("overwrite").save(s"plotly/unsure")
     //showQueryMenu()
 
