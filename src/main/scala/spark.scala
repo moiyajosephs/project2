@@ -109,7 +109,7 @@ object spark {
     println(s"3) Show total covid cases/deaths in your state")
     println(s"4) Show covid cases/deaths per capita for states with the greatest/least amount of strong vaccine hesitancy")
     println(s"5) Show covid cases/deaths per capita for states with the greatest/least amount of vaccine uncertainty")
-    println(s"6) Logout")
+    println(s"0) Logout")
     println("----------------------------------")
     println("Enter your option:")
     user_input = scala.io.StdIn.readLine()
@@ -137,8 +137,25 @@ object spark {
     countyFIPS = scala.io.StdIn.readLine()
     println("COUNTY VACCINE HESITANCY")
     spark.sql(s"Select STATE, COUNTY, POPULATION_SIZE, round(PERCENT_HESITANT_UNSURE * 100, 1) AS PERCENT_HESITANT_UNSURE, round(PERCENT_STRONG_HESITANT * 100) AS PERCENT_STRONG_HESITANT from county_hesitancy where FIPS = '$countyFIPS'").show
+    if(user == "basic")
+    {
+      toMenu()
+    }
+
+    println("Would you like to save the data as a CSV file? Yes/No")
+    var saveFile = scala.io.StdIn.readLine()
+
+    if(saveFile.toUpperCase() == "YES") {
+      spark.sql(s"Select STATE, COUNTY, POPULATION_SIZE, round(PERCENT_HESITANT_UNSURE * 100, 1) AS PERCENT_HESITANT_UNSURE, round(PERCENT_STRONG_HESITANT * 100) AS PERCENT_STRONG_HESITANT from county_hesitancy where FIPS = '$countyFIPS'").write.format("csv").mode("overwrite").save(s"plotly/unsurebycounty")
+      println("Data has been successfully saved!")
+    }
+    else{
+      toMenu()
+    }
+    //showQueryMenu()
     toMenu()
   }
+
 
   def query2() = {
     println("Please enter state:")
@@ -146,15 +163,47 @@ object spark {
     println("STATE VACCINE HESITANCY")
     spark.sql(s"Create view if not exists state_data as (Select state_pop.STATE, state_pop.POPULATION_ESTIMATE AS STATE_POPPULATION_ESTIMATE, round(PERCENT_HESITANT_UNSURE * 100, 1) AS PERCENT_HESITANT_UNSURE, round(PERCENT_STRONG_HESITANT * 100) AS PERCENT_STRONG_HESITANT from state_percent_hesitancy JOIN state_pop on state_percent_hesitancy.STATE = state_pop.STATE)")
     spark.sql(s"Select * from state_data where state = '$state'").show
+    if(user == "basic")
+    {
+      toMenu()
+    }
+
+    println("Would you like to save the data as a CSV file? Yes/No")
+    var saveFile = scala.io.StdIn.readLine()
+
+    if(saveFile.toUpperCase() == "YES") {
+      spark.sql(s"Select * from state_data where state = '$state'").write.format("csv").mode("overwrite").save(s"plotly/unsurebystate")
+      println("Data has been successfully saved!")
+    }
+    else{
+      toMenu()
+    }
     //showQueryMenu()
     toMenu()
   }
+
+
 
   def query3() = {
     println("Please enter state:")
     state = scala.io.StdIn.readLine()
     println("STATE CASE AND DEATH TOTALS")
     spark.sql(s"Select STATE, CASES_NOV2021 AS TOTAL_CASES, DEATHS_NOV2021 AS TOTAL_DEATHS from deaths_cases_since_june7 where STATE = '$state'").show
+    if(user == "basic")
+    {
+      toMenu()
+    }
+
+    println("Would you like to save the data as a CSV file? Yes/No")
+    var saveFile = scala.io.StdIn.readLine()
+
+    if(saveFile.toUpperCase() == "YES") {
+      spark.sql(s"Select STATE, CASES_NOV2021 AS TOTAL_CASES, DEATHS_NOV2021 AS TOTAL_DEATHS from deaths_cases_since_june7 where STATE = '$state'").write.format("csv").mode("overwrite").save(s"plotly/casebystate")
+      println("Data has been successfully saved!")
+    }
+    else{
+      toMenu()
+    }
     //showQueryMenu()
     toMenu()
   }
@@ -187,11 +236,24 @@ object spark {
     greatestOrLeast()
     println(s"COVID CASES/DEATHS PER CAPITA FOR STATES WITH THE $rank PERCENTAGE OF $hesitance INDIVIDUALS")
     spark.sql(s"select STATE, PERCENT_HESITANT_UNSURE, CASES_PER_100000, DEATHS_PER_100000 from deathspercap_vs_hesitancy order by PERCENT_HESITANT_UNSURE $order limit 10 ").show
-    //showQueryMenu()
-    toMenu()
-    //spark.sql(s"select STATE, PERCENT_HESITANT_UNSURE, CASES_PER_100000, DEATHS_PER_100000 from deathspercap_vs_hesitancy order by PERCENT_HESITANT_UNSURE $order limit 50").write.format("csv").mode("overwrite").save(s"plotly/unsure")
-    //showQueryMenu()
 
+    if (user == "basic") {
+      toMenu()
+    }
+
+    println("Would you like to save the data as a CSV file? Yes/No")
+    var saveFile = scala.io.StdIn.readLine()
+
+    if (saveFile.toUpperCase() == "YES") {
+      spark.sql(s"select STATE, PERCENT_HESITANT_UNSURE, CASES_PER_100000, DEATHS_PER_100000 from deathspercap_vs_hesitancy order by PERCENT_HESITANT_UNSURE $order limit 50").write.format("csv").mode("overwrite").save(s"plotly/unsure")
+
+      println("Data has been successfully saved!")
+    }
+    else {
+      toMenu()
+    }
+
+    toMenu()
   }
 
   def greatestOrLeast(): Unit = {
@@ -199,7 +261,7 @@ object spark {
     println(s"1) Greatest")
     println(s"2) Least")
     user_input = scala.io.StdIn.readLine()
-    println(user_input)
+    //println(user_input)
     if(user_input == "1") {
       order = "desc"
       rank = "GREATEST"
