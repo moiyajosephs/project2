@@ -162,6 +162,7 @@ object spark {
     greatestOrLeast()
     println(s"COVID CASES/DEATHS PER CAPITA FOR STATES WITH THE $rank PERCENTAGE OF $hesitance INDIVIDUALS")
     spark.sql(s"select STATE, PERCENT_STRONG_HESITANT, CASES_PER_100000, DEATHS_PER_100000 from deathspercap_vs_hesitancy order by PERCENT_STRONG_HESITANT $order limit 10 ").show
+
     if(user == "basic")
       {
         toMenu()
@@ -180,6 +181,10 @@ object spark {
     }
     //showQueryMenu()
     toMenu()
+
+    spark.sql(s"select STATE, PERCENT_STRONG_HESITANT, CASES_PER_100000, DEATHS_PER_100000 from deathspercap_vs_hesitancy order by PERCENT_STRONG_HESITANT $order limit 50").write.format("csv").mode("overwrite").save(s"plotly/greatestorleast")
+    showQueryMenu()
+
   }
   def query5() = {
     greatestOrLeast()
@@ -187,6 +192,10 @@ object spark {
     spark.sql(s"select STATE, PERCENT_HESITANT_UNSURE, CASES_PER_100000, DEATHS_PER_100000 from deathspercap_vs_hesitancy order by PERCENT_HESITANT_UNSURE $order limit 10 ").show
     //showQueryMenu()
     toMenu()
+
+    //spark.sql(s"select STATE, PERCENT_HESITANT_UNSURE, CASES_PER_100000, DEATHS_PER_100000 from deathspercap_vs_hesitancy order by PERCENT_HESITANT_UNSURE $order limit 50").write.format("csv").mode("overwrite").save(s"plotly/unsure")
+    //showQueryMenu()
+
   }
 
   def greatestOrLeast(): Unit = {
