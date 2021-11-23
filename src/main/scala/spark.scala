@@ -7,6 +7,7 @@ object spark {
   var state = ""
   var hesitance = ""
   var order = ""
+  var rank = ""
 
   System.setProperty("hadoop.home.dir", "C:\\hadoop")
   val spark = SparkSession
@@ -80,7 +81,6 @@ object spark {
     spark.sql("create view if not exists state_pop as (SELECT stname AS STATE, popestimate2020 AS POPULATION_ESTIMATE from county_pop where county = '000')")
   }
 
-
   def deaths_cases_population() {
     spark.sql("DROP VIEW IF EXISTS deaths_cases_population")
     spark.sql("create view if not exists deaths_cases_population as (SELECT state_pop.STATE, deaths_cases_since_june7.DEATHS_NOV2021-deaths_cases_since_june7.DEATHS_JUNE2021 as DEATHS_SINCE_JUNE7, deaths_cases_since_june7.CASES_NOV2021-deaths_cases_since_june7.CASES_JUNE2021 as CASES_SINCE_JUNE7, state_pop.POPULATION_ESTIMATE FROM deaths_cases_since_june7 JOIN state_pop ON deaths_cases_since_june7.STATE = state_pop.STATE)")
@@ -128,31 +128,37 @@ object spark {
   def query1() = {
     println("Please enter 5-digit county FIPS code:")
     countyFIPS = scala.io.StdIn.readLine()
-    spark.sql(s"Select * from county_hesitancy where FIPS = '$countyFIPS'").show
+    println("COUNTY VACCINE HESITANCY")
+    spark.sql(s"Select STATE, COUNTY, POPULATION_SIZE, round(PERCENT_HESITANT_UNSURE * 100, 1) AS PERCENT_HESITANT_UNSURE, round(PERCENT_STRONG_HESITANT * 100) AS PERCENT_STRONG_HESITANT from county_hesitancy where FIPS = '$countyFIPS'").show
     showQueryMenu()
   }
 
   def query2() = {
     println("Please enter state:")
     state = scala.io.StdIn.readLine()
-    spark.sql(s"Select STATE, round(PERCENT_HESITANT_UNSURE * 100, 1) AS PERCENT_HESITANT_UNSURE, round(PERCENT_STRONG_HESITANT * 100) AS PERCENT_STRONG_HESITANT from state_percent_hesitancy where STATE = '$state'").show
+    println("STATE VACCINE HESITANCY")
+    spark.sql(s"Create view if not exists state_data as (Select state_pop.STATE, state_pop.POPULATION_ESTIMATE AS STATE_POPPULATION_ESTIMATE, round(PERCENT_HESITANT_UNSURE * 100, 1) AS PERCENT_HESITANT_UNSURE, round(PERCENT_STRONG_HESITANT * 100) AS PERCENT_STRONG_HESITANT from state_percent_hesitancy JOIN state_pop on state_percent_hesitancy.STATE = state_pop.STATE)")
+    spark.sql(s"Select * from state_data where state = '$state'").show
     showQueryMenu()
   }
 
   def query3() = {
     println("Please enter state:")
     state = scala.io.StdIn.readLine()
+    println("STATE CASE AND DEATH TOTALS")
     spark.sql(s"Select STATE, CASES_NOV2021 AS TOTAL_CASES, DEATHS_NOV2021 AS TOTAL_DEATHS from deaths_cases_since_june7 where STATE = '$state'").show
     showQueryMenu()
   }
 
   def query4() = {
     greatestOrLeast()
+    println(s"COVID CASES/DEATHS PER CAPITA FOR STATES WITH THE $rank PERCENTAGE OF $hesitance INDIVIDUALS")
     spark.sql(s"select STATE, PERCENT_STRONG_HESITANT, CASES_PER_100000, DEATHS_PER_100000 from deathspercap_vs_hesitancy order by PERCENT_STRONG_HESITANT $order limit 10 ").show
     showQueryMenu()
   }
   def query5() = {
     greatestOrLeast()
+    println(s"COVID CASES/DEATHS PER CAPITA FOR STATES WITH THE $rank PERCENTAGE OF $hesitance INDIVIDUALS")
     spark.sql(s"select STATE, PERCENT_HESITANT_UNSURE, CASES_PER_100000, DEATHS_PER_100000 from deathspercap_vs_hesitancy order by PERCENT_HESITANT_UNSURE $order limit 10 ").show
     showQueryMenu()
   }
@@ -165,8 +171,12 @@ object spark {
     println(user_input)
     if(user_input == "1") {
       order = "desc"
+      rank = "GREATEST"
+      hesitance = "STRONGLY HESITANT"
     } else if (user_input == "2") {
       order = "asc"
+      rank = "LOWEST"
+      hesitance = "HESITANT OR UNSURE"
     } else {
       println("Wrong input. Please enter 1 or 2")
     }
