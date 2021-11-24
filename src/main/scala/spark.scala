@@ -210,7 +210,7 @@ object spark {
 
   def query4() = {
     greatestOrLeast()
-    println(s"COVID CASES/DEATHS PER CAPITA FOR STATES WITH THE $rank PERCENTAGE OF $hesitance INDIVIDUALS")
+    println(s"COVID CASES/DEATHS PER CAPITA FOR STATES WITH THE $rank PERCENTAGE OF STRONGLY HESITANT INDIVIDUALS")
     spark.sql(s"select STATE, PERCENT_STRONG_HESITANT, CASES_PER_100000, DEATHS_PER_100000 from deathspercap_vs_hesitancy order by PERCENT_STRONG_HESITANT $order limit 10 ").show
 
     if(user == "basic")
@@ -234,7 +234,7 @@ object spark {
   }
   def query5() = {
     greatestOrLeast()
-    println(s"COVID CASES/DEATHS PER CAPITA FOR STATES WITH THE $rank PERCENTAGE OF $hesitance INDIVIDUALS")
+    println(s"COVID CASES/DEATHS PER CAPITA FOR STATES WITH THE $rank PERCENTAGE OF HESITANT/UNSURE INDIVIDUALS")
     spark.sql(s"select STATE, PERCENT_HESITANT_UNSURE, CASES_PER_100000, DEATHS_PER_100000 from deathspercap_vs_hesitancy order by PERCENT_HESITANT_UNSURE $order limit 10 ").show
 
     if (user == "basic") {
